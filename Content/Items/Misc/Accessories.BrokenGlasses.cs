@@ -169,13 +169,19 @@ namespace StarlightRiver.Content.Items.Misc
 		private void StarlightPlayer_OnHitNPCEvent(Player player, Item Item, NPC target, NPC.HitInfo info, int damageDone)
 		{
 			if (Equipped(player))
+			{
 				BuffInflictor.Inflict(target, 600, new BrokenGlassesBuff() { lastInflicted = player });
+				player.GetModPlayer<StarlightPlayer>().shouldSendHitPacket = true;
+			}
 		}
 
 		private void StarlightPlayer_OnHitNPCWithProjEvent(Player player, Projectile proj, NPC target, NPC.HitInfo info, int damageDone)
 		{
 			if (Equipped(player))
+			{
 				BuffInflictor.Inflict(target, 600, new BrokenGlassesBuff() { lastInflicted = player });
+				player.GetModPlayer<StarlightPlayer>().shouldSendHitPacket = true;
+			}
 		}
 
 		public override void SafeSetDefaults()
