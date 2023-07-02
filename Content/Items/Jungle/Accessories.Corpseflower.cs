@@ -199,10 +199,10 @@ namespace StarlightRiver.Content.Items.Jungle
 			}
 		}
 
-		private void ResetDamage(NPC NPC)
+		private void ResetDamage(NPC npc)
 		{
-			if (AnyInflicted(NPC))
-				(GetInstance(NPC) as CorpseflowerBuff).totalDamage = 0;
+			if (AnyInflicted(npc))
+				(GetInstance(npc) as CorpseflowerBuff).totalDamage = 0;
 		}
 
 		public override CorpseflowerStack GenerateDefaultStackTyped(int duration)

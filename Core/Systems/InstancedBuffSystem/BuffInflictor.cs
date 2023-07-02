@@ -114,10 +114,14 @@ namespace StarlightRiver.Core.Systems.InstancedBuffSystem
 		/// <param name="premadeInstance">An optional pre-made instance to add or override the existing instance with. If this is left as null the instance wont be overridden if it already exists.</param>
 		public static void Inflict<T>(NPC npc, int duration, T premadeInstance = null) where T : InstancedBuff, new()
 		{
+			StarlightRiver.Instance.Logger.Info("An instanced buff has been inflicted");
+
 			if (typeof(T).IsSubclassOf(typeof(StackableBuff)))
 				InflictStackInner<T>(npc, duration, null);
 			else
 				InflictInner<T>(npc, duration, premadeInstance);
+
+			npc.netUpdate = true;
 		}
 
 		/// <summary>
@@ -131,6 +135,8 @@ namespace StarlightRiver.Core.Systems.InstancedBuffSystem
 		public static void InflictStack<A, B>(NPC npc, int duration, B premadeStack = null) where A : StackableBuff<B>, new() where B : BuffStack
 		{
 			InflictStackInner<A>(npc, duration, premadeStack);
+
+			npc.netUpdate = true;
 		}
 
 		/// <summary>

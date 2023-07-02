@@ -51,8 +51,17 @@ namespace StarlightRiver.Core.Systems.InstancedBuffSystem
 		{
 			orig(self, lowerBuffTime);
 
-			if (!Main.dedServ)
-				self.GetGlobalNPC<InstancedBuffNPC>().buffInstances.ForEach(n => n.UpdateNPC(self));
+			if (self.active && self.type > 0)
+			{
+				try
+				{
+					self.GetGlobalNPC<InstancedBuffNPC>().buffInstances.ForEach(n => n.UpdateNPC(self));
+				}
+				catch
+				{
+					Mod.Logger.Error($"Tried to get a nonexistant global to update instanced buffs! WhoAmI: {self.whoAmI}, Name: {self.FullName}, Type: {self.type}");
+				}
+			}
 		}
 
 		/// <summary>
@@ -73,6 +82,8 @@ namespace StarlightRiver.Core.Systems.InstancedBuffSystem
 				InstancedBuff buff = buffInstances[k];
 				binaryWriter.Write(buff.Name);
 				buff.Serialize(binaryWriter);
+
+				Mod.Logger.Info($"({npc.FullName} {npc.whoAmI}): sending an instanced buff as part of sync: {buff.Name}");
 			}
 		}
 
@@ -84,11 +95,14 @@ namespace StarlightRiver.Core.Systems.InstancedBuffSystem
 			{
 				string name = binaryReader.ReadString();
 
+				Mod.Logger.Info($"({npc.FullName} {npc.whoAmI}): recieved an instanced buff as part of sync: {name}");
+
 				InstancedBuff buff = GetInstance(npc, name);
 
 				// re-inflict if its not there or lost
 				if (buff is null)
 				{
+					Mod.Logger.Info($"({npc.FullName} {npc.whoAmI}): inflicting an instanced buff as part of sync: {name}");
 					buff = InstancedBuff.samples[name].Clone();
 					buffInstances.Add(buff);
 				}

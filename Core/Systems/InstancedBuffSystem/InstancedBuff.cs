@@ -76,7 +76,7 @@ namespace StarlightRiver.Core.Systems.InstancedBuffSystem
 		/// <returns>If that NPC has any instance of this buff</returns>
 		public bool AnyInflicted(NPC npc)
 		{
-			return npc.HasBuff(BackingType);
+			return npc.HasBuff(BackingType) && GetInstance(npc) != null;
 		}
 
 		/// <summary>
@@ -86,7 +86,7 @@ namespace StarlightRiver.Core.Systems.InstancedBuffSystem
 		/// <returns>If that player has any instance of this buff</returns>
 		public bool AnyInflicted(Player player)
 		{
-			return player.HasBuff(BackingType);
+			return player.HasBuff(BackingType) && GetInstance(player) != null;
 		}
 
 		/// <summary>
