@@ -1,5 +1,7 @@
 ﻿using System.Collections.Generic;
+using System.IO;
 using System.Linq;
+using Terraria.ModLoader.IO;
 
 namespace StarlightRiver.Core.Systems.InstancedBuffSystem
 {
@@ -60,6 +62,39 @@ namespace StarlightRiver.Core.Systems.InstancedBuffSystem
 		public override void PostAI(NPC npc)
 		{
 			buffInstances.RemoveAll(n => !npc.HasBuff(n.BackingType));
+		}
+
+		public override void SendExtraAI(NPC npc, BitWriter bitWriter, BinaryWriter binaryWriter)
+		{
+			binaryWriter.Write(buffInstances.Count);
+
+			for (int k = 0; k < buffInstances.Count; k++)
+			{
+				InstancedBuff buff = buffInstances[k];
+				binaryWriter.Write(buff.Name);
+				buff.Serialize(binaryWriter);
+			}
+		}
+
+		public override void ReceiveExtraAI(NPC npc, BitReader bitReader, BinaryReader binaryReader)
+		{
+			int count = binaryReader.ReadInt32();
+
+			for (int k = 0; k < count; k++)
+			{
+				string name = binaryReader.ReadString();
+
+				InstancedBuff buff = GetInstance(npc, name);
+
+				// re-inflict if its not there or lost
+				if (buff is null)
+				{
+					buff = InstancedBuff.samples[name].Clone();
+					buffInstances.Add(buff);
+				}
+
+				buff.Deserialize(binaryReader);
+			}
 		}
 	}
 }

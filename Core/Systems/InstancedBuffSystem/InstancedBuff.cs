@@ -1,4 +1,7 @@
-﻿namespace StarlightRiver.Core.Systems.InstancedBuffSystem
+﻿using System.Collections.Generic;
+using System.IO;
+
+namespace StarlightRiver.Core.Systems.InstancedBuffSystem
 {
 	/// <summary>
 	/// This class is to be used for buffs which require instanced data per enttiy it is inflicted on. For example, a different DoT value to apply.
@@ -6,6 +9,8 @@
 	/// </summary>
 	internal abstract class InstancedBuff : ILoadable
 	{
+		public static Dictionary<string, InstancedBuff> samples = new();
+
 		/// <summary>
 		/// The numeric ID of the backing traditional buff to indicate this buffs inflicted status
 		/// </summary>
@@ -39,7 +44,13 @@
 		public void Load(Mod mod)
 		{
 			mod.AddContent(new InstancedBuffBacker(Name, DisplayName, Texture, Tooltip, Debuff));
+			samples.Add(Name, this);
 			Load();
+		}
+
+		public InstancedBuff Clone()
+		{
+			return MemberwiseClone() as InstancedBuff;
 		}
 
 		/// <summary>
@@ -109,6 +120,18 @@
 		/// </summary>
 		/// <param name="npc"></param>
 		public virtual void UpdateNPC(NPC npc) { }
+
+		/// <summary>
+		/// Serialize data on this instanced buff to be sent over the network
+		/// </summary>
+		/// <param name="writer"></param>
+		public virtual void Serialize(BinaryWriter writer) { }
+
+		/// <summary>
+		/// Deserialize data from the net to update this instanced buff
+		/// </summary>
+		/// <param name="reader"></param>
+		public virtual void Deserialize(BinaryReader reader) { }
 	}
 
 	/// <summary>
